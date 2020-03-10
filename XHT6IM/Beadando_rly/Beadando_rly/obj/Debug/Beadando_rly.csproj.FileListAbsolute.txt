@@ -1,0 +1,46 @@
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\Beadando_rly.exe.config
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\Beadando_rly.exe
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\Beadando_rly.pdb
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.dll
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.dll
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.EF6.dll
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.Linq.dll
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.xml
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.xml
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.dll.config
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.csprojAssemblyReference.cache
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Form1.resources
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Properties.Resources.resources
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.csproj.GenerateResource.cache
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.csproj.CopyComplete
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.exe
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.pdb
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Form2.resources
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\bin\Debug\Program.cs
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Match_Chooser.resources
+C:\Users\Beti\Desktop\New folder\C#\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Form4.resources
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\Program.cs
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\Beadando_rly.exe.config
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\Beadando_rly.exe
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\Beadando_rly.pdb
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.dll
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.SqlServer.dll
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.dll
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.EF6.dll
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.Linq.dll
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.xml
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\EntityFramework.SqlServer.xml
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.xml
+D:\XHT6IM\Beadando_rly\Beadando_rly\bin\Debug\System.Data.SQLite.dll.config
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.csprojAssemblyReference.cache
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Form1.resources
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Form2.resources
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Form4.resources
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Match_Chooser.resources
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.Properties.Resources.resources
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.csproj.GenerateResource.cache
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.csproj.CopyComplete
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.exe
+D:\XHT6IM\Beadando_rly\Beadando_rly\obj\Debug\Beadando_rly.pdb
