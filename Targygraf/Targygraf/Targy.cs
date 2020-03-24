@@ -10,8 +10,11 @@ namespace Targygraf
     {
         string nev;
         string kod;
-        int ajanlottfelev;
+        string ajanlottfelev;
+
+        string kategoria;
         string tipus;
+
         int kredit;
         string elofeltetelkod;
 

@@ -23,7 +23,7 @@ namespace Targygraf
         }
 
         public void OpenFile() {
-            files excel = new files();
+            excelFiles excel = new excelFiles();
             label2.Text = "End";
             //excel.readTables();
         }
