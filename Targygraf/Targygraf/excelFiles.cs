@@ -14,9 +14,20 @@ namespace Targygraf
         Workbook wb; //jelenlegi munkafüzet
         Worksheet ws; //az első sheetre mentünk át mindent
 
+        Regex szabvalFilter = new Regex(@"(?i)^Tantárgy\sneve");
+        Regex mscFelevFilter = new Regex(@"(.* félév[\s\S]*\d. félév[\s\S]*\d. félév[\s\S]*esetén\))");
+        Regex kommentFilter = new Regex(@"(\* ?([^*]+))+");
+        
+        Regex uresFilter = new Regex(@"-|^\s*$");
+
+        Szak szak;
+        List<Targy> targyak;
+        List<Komment> kommentek = new List<Komment>();
+        Dictionary<string, string[]> megjegyzesek;
+
+
         public excelFiles() {
             //wb = excel.Workbooks.Open(@"d:\szoftverfejlesztes\proginfo.xlsx");
-            //ws = wb.Worksheets[Sheet];
 
             var allFiles = Directory.EnumerateFiles(@"D:\Szoftverfejlesztes-Targygraf\excelek");
             Regex fileFilter = new Regex(@"^(.)*?\\[^~$]+.xlsx$");
@@ -26,9 +37,13 @@ namespace Targygraf
                 {
                     wb = excel.Workbooks.Open(file);
 
-                    mergeSheets(); //az első sheetre rakunk mindent
+                    mergeSheets(); //az első sheetre rakunk mindent              
                     ws = wb.Worksheets[1]; //ws mindig az adott workbook első sheetje
+                    targyak = new List<Targy>();
+                    megjegyzesek = new Dictionary<string, string[]>();
                     readInData(); //beolvasunk
+                    //addKomments();
+                    //insertCurrentDatas();
 
                     Console.WriteLine(""); //testing
                     wb.Close(0); //bezárjuk, nem mentünk
@@ -89,7 +104,7 @@ namespace Targygraf
                 //Console.WriteLine(goalSheetStart); //testing
                 wb.Worksheets[i].Range["A1", sourceSheetEnd].Copy(wb.Worksheets[1].Range[goalSheetStart]);
             }
-            //wb.SaveCopyAs(@"D:\Szoftverfejlesztes-Targygraf\Book1.xlsx"); //testing, ha ki akarjuk menteni valamelyik sheetet
+            wb.SaveCopyAs(@"D:\Szoftverfejlesztes-Targygraf\Book1.xlsx"); //testing, ha ki akarjuk menteni valamelyik sheetet
    
         }
 
@@ -109,23 +124,25 @@ namespace Targygraf
             string szakTipus = "";
             string ervenyesseg = "";
          
-            Regex nevFilter = new Regex(@"^(.*?)(BSc)|^(.*?)(MSc)");
+            Regex nevFilter = new Regex(@"^(.*?) (BSc|MSc|felsőoktatási szakképzés|továbbképzési szak|BProf)");
             if (nevFilter.IsMatch(ws.Cells[1, 1].Value2.ToString())) //kiszedjük a szak nevét és tipusát
             {
-                MatchCollection matches = Regex.Matches(ws.Cells[1, 1].Value2.ToString(), @"^(.*?)(BSc)|^(.*?)(MSc)");
+                MatchCollection matches = Regex.Matches(ws.Cells[1, 1].Value2.ToString(), @"^(.*?) (BSc|MSc|felsőoktatási szakképzés|továbbképzési szak|BProf)");
                 szakNev = matches[0].Groups[1].Value;
                 szakTipus = matches[0].Groups[2].Value;
-                Console.WriteLine(szakNev + " " + szakTipus); //testing
+                //Console.WriteLine(szakNev + " " + szakTipus); //testing
             }
 
-            Regex ervenyessegFilter = new Regex(@"\w.*(\d{4}\/\d{2}.*){2}");
+            Regex ervenyessegFilter = new Regex(@"\w.*(\d{4}\/\d{2}.*)"); // \w.*(\d{4}\/\d{2}.*){2}
             if (ervenyessegFilter.IsMatch(ws.Cells[3, 1].Value2.ToString())) //kiszedjük a szak érvényességét mint szöveg
             {
-                MatchCollection matches = Regex.Matches(ws.Cells[3, 1].Value2.ToString(), @"\w.*(\d{4}\/\d{2}.*){2}");
+                MatchCollection matches = Regex.Matches(ws.Cells[3, 1].Value2.ToString(), @"\w.*(\d{4}\/\d{2}.*)");
                 ervenyesseg = matches[0].Groups[0].Value;
-                Console.WriteLine(ervenyesseg); //testing
+                //Console.WriteLine(ervenyesseg); //testing
             }
-
+            
+            szak = new Szak(szakNev, szakTipus, ervenyesseg);
+            szak.printSzak();
         }
 
         public int getActualCol(int rowNum, int desiredCol) { //a mergelt cellák miatt lehet, hogy nem a várt cella tartalmazza az értéket
@@ -147,22 +164,34 @@ namespace Targygraf
             return actualCol;
         }
 
-        public int getUjFelev(int wsRowCount, int currentRow, string ajanlottFelev, string targyKategoria, ref string targyTipus) {
+        public int getUjFelev(int wsRowCount, int currentRow, string ajanlottFelev, string targyKategoria, string targyTipus) {
             int kreditCol = getActualCol(currentRow, 4);
             int elofeltetelCol = getActualCol(currentRow, 6);
             int targyKodCol = getActualCol(currentRow, 2);
-
             currentRow += 2;
-            Regex osszesFilter = new Regex(@"^Összesen|^Összesítés|^Kreditpontok a modell ?tanterv féléveiben");
-            Regex szabvalFilter = new Regex(@"(?i)^Tantárgy\sneve");
+            Regex vegeFilter = new Regex(@"(?i)^Összesen|^Összesítés|^Kreditpontok a modell ?tanterv féléveiben");
 
-            while (currentRow < wsRowCount && ws.Cells[currentRow, 1].Value2 != null && !osszesFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString())) //amig nincs vége a tárgyaknak
+            while (currentRow < wsRowCount && ws.Cells[currentRow, 1].Value2 != null && !vegeFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString())) //amig nincs vége a tárgyaknak
             {
-                if (ws.Cells[currentRow, kreditCol].Value2 == null && ws.Cells[currentRow+1, 1].Value2 != null
+                if (ws.Cells[currentRow, kreditCol].Value2 == null && ws.Cells[currentRow + 1, 1].Value2 != null
                     && szabvalFilter.IsMatch(ws.Cells[currentRow + 1, 1].Value2.ToString())) //ha uj targykategoria van, akkor visszalépünk
                 {
                     return --currentRow;
                 }
+                else if (ws.Cells[currentRow, kreditCol].Value2 == null && kommentFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString()))
+                { //ha kommentet találtunk
+                    MatchCollection matches = Regex.Matches(ws.Cells[currentRow, 1].Value2.ToString(), @"(\* ?([^*]+))+");
+                    string[] array = new string[matches.Count];
+                    for(int i=0; i<matches.Count; i++)
+                    {
+                        //kommentek.Add(new Komment(ajanlottFelev, match.Groups[2].Value));
+                        //Console.WriteLine(match.Groups[2].Value); //testing
+                        array[i] = matches[i].Groups[2].Value;
+                        Console.WriteLine(matches[i].Groups[2].Value);
+
+                    }
+                    megjegyzesek.Add(ajanlottFelev, array);
+                } 
                 else if (ws.Cells[currentRow, kreditCol].Value2 == null) //ha uj targytipust talalunk
                 {
                     targyTipus = ws.Cells[currentRow, 1].Value2.ToString();
@@ -177,15 +206,13 @@ namespace Targygraf
             return --currentRow;
         }
 
-        public void setTipusToDiff(ref int rowNum, ref string targyTipus) { //megváltoztatjuk a tárgytipust
-            targyTipus = ws.Cells[rowNum, 1].Value2.ToString();
-        }
 
        public void getUjTantargy(int kreditCol, int elofeltetelCol, int targyKodCol, int currentRow, string ajanlottFelev, string targyKategoria,
            string targyTipus) {
             string targyNev = "";
             string targyKod = "";
             int kredit = 0;
+            string elofeltetelstring = "";
 
             targyNev = Regex.Replace(ws.Cells[currentRow, 1].Value2.ToString(), @"\r\n?|\n", " "); //tárgy neve
             if (ws.Cells[currentRow, targyKodCol].Value2 != null) //ha van kódja
@@ -193,35 +220,137 @@ namespace Targygraf
                 targyKod = ws.Cells[currentRow, targyKodCol].Value2.ToString();
             }
             else targyKod = ""; //ha nincs kódja
-            Console.WriteLine(targyNev + " " + targyKod); //testing
-            
+            //Console.WriteLine(targyNev + " " + targyKod); //testing 
 
             MatchCollection match = Regex.Matches(ws.Cells[currentRow, kreditCol].Value2.ToString(), @"^[0-9]*");
             kredit = Convert.ToInt32(match[0].Groups[0].Value); //kredit
-            Console.WriteLine(ajanlottFelev + " " + targyKategoria+ " "+targyTipus + " " + kredit); //testing
+            //Console.WriteLine(ajanlottFelev + " " + targyKategoria+ " "+targyTipus + " " + kredit); //testing
 
-            List<string> elofeltetelkod = getElofeltetelek(currentRow, elofeltetelCol); //elofeltetelek
+            if (ws.Cells[currentRow, elofeltetelCol].Value2!=null && !uresFilter.IsMatch(ws.Cells[currentRow, elofeltetelCol].Value2.ToString()))
+            { //elofeltetelek
+                elofeltetelstring = ws.Cells[currentRow, elofeltetelCol].Value2.ToString();
+            }
+            else elofeltetelstring = "";
 
+            targyak.Add(new Targy(targyNev, targyKod, ajanlottFelev, targyKategoria, targyTipus, kredit, elofeltetelstring));
             //itt kell lementeni tárgyként
         }
 
-        private List<string> getElofeltetelek(int currentRow, int elofeltetelCol) {
-            Regex elofeltetelFilter = new Regex(@"\(*\(*[A-Z]+[0-9]+[a-zA-Z]+\)*\**|[0-9]+ ?kredit"); 
-            List<string> elofeltetelkod = new List<string>();
+        //public void addKomments()
+        //{
+        //    foreach (Targy targy in targyak)
+        //    {
+        //        int starCount = targy.nev.Length - targy.nev.Replace("*", "").Length;
+        //        if (starCount!=0) {
+        //            targy.setMegjegyzes(megjegyzesek[targy.ajanlottfelev][starCount-1]);
+        //            Console.WriteLine(megjegyzesek[targy.ajanlottfelev][starCount - 1]);
+        //        }
+        //        targy.nev = targy.nev.Replace("*", "");
 
-            if (ws.Cells[currentRow, elofeltetelCol].Value2 != null &&
-                elofeltetelFilter.IsMatch(ws.Cells[currentRow, elofeltetelCol].Value2.ToString()))
+
+        //    }
+        //}
+
+        public void addMegjegyzesek(SqliteDataAccess sqlite, string szakid) {
+            foreach (var megjegyzes in megjegyzesek)
             {
-                //Console.WriteLine(ws.Cells[j, elofeltetelCol].Value2.ToString()); //testing
-                MatchCollection matches = Regex.Matches(ws.Cells[currentRow, elofeltetelCol].Value2.ToString(), @"\(*\(*[A-Z]+[0-9]+[a-zA-Z]+\)*\**|[0-9]+ ?kredit");
-                 //\(*([A-Z]+[0-9]+[a-zA-Z]+)\)*\** ?
-                foreach (Match elofeltetelmatch in matches)
-                {
-                    Console.WriteLine(elofeltetelmatch.Value); //testing
-                    elofeltetelkod.Add(elofeltetelmatch.Value);
+                foreach (string text in megjegyzes.Value) {
+                    try{
+                        sqlite.ExecuteQuery("insert into Megjegyzés(szöveg) values ('" + text + "')");
+                    }
+                    catch (Exception e){
+                        Console.WriteLine(e);
+                    }           
                 }
             }
-            return elofeltetelkod;
+            foreach (Targy targy in targyak)
+            {
+                int starCount = targy.nev.Length - targy.nev.Replace("*", "").Length;
+                if (starCount != 0)
+                {
+                    try{
+                        sqlite.ExecuteQuery("insert into Megjegyzése values (" + szakid + ", '" + targy.kod + "', '"
+                        + megjegyzesek[targy.ajanlottfelev][starCount - 1] + "')");
+                    }
+                    catch (Exception e){
+                        Console.WriteLine(e);
+                    }
+                    //targy.setMegjegyzes(megjegyzesek[targy.ajanlottfelev][starCount - 1]);                  
+                    Console.WriteLine(megjegyzesek[targy.ajanlottfelev][starCount - 1]);
+                }
+                //targy.nev = targy.nev.Replace("*", "");
+            }
+        }
+
+
+        public void insertCurrentDatas() {
+            SqliteDataAccess sqlite = new SqliteDataAccess();
+            szak.printSzak();
+            sqlite.ExecuteQuery(szak.getInsert());
+
+            string szakid = sqlite.QueryResult("select id from Szak where név='" + szak.szakNev +
+                "' and [képzés típusa]='" + szak.szakTipus + "' and érvényesség='" + szak.ervenyesseg + "'");
+
+            Console.WriteLine(szakid);
+            foreach (Targy targy in targyak)
+            {
+                targy.printTargy();
+                try{
+                    sqlite.ExecuteQuery(targy.getInsertTantargy());
+                }
+                catch (Exception e){
+                     Console.WriteLine(e);
+                }
+                try{
+                    sqlite.ExecuteQuery(targy.getInsertTantargya(szakid));
+                }
+                catch (Exception e){
+                    Console.WriteLine(e.Message);
+                }
+                if (targy.kreditfeltetel!=0) {
+                    try{
+                        sqlite.ExecuteQuery(targy.getInsertKreditfeltetel());
+                    }
+                    catch (Exception e){
+                        Console.WriteLine(e.Message);
+                    }
+                    try{
+                        sqlite.ExecuteQuery(targy.getInsertKreditFeltetele(szakid));
+                    }
+                    catch (Exception e){
+                        Console.WriteLine(e.Message);
+                    }
+                }
+
+            }
+            addMegjegyzesek(sqlite, szakid);
+
+            foreach (Targy targy in targyak)
+            {
+                foreach(Elofeltetel feltetel in targy.elofeltetelek)
+                {
+                    try{
+                        sqlite.ExecuteQuery(feltetel.getInsertElofeltetele(szakid, targy.kod));
+                    }
+                    catch (Exception e){
+                        Console.WriteLine(e.Message);
+                    }
+                }
+                foreach (Elofeltetel feltetel in targy.elofeltetelek)
+                {
+                    if (!string.IsNullOrEmpty(feltetel.masodikkod)) {
+                        try
+                        {
+                            sqlite.ExecuteQuery(feltetel.getInsertHelyettesitheto(szakid, targy.kod));
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e.Message);
+                        }
+                    }
+
+                }
+            }
         }
 
         public void readInData()
@@ -232,43 +361,55 @@ namespace Targygraf
             string ajanlottFelev = "";
             string targyKategoria = "Kötelező szakmai tárgyak";
             string targyTipus = "";
-            int lastRow = getRowNum(ws);
-            Regex osszesFilter = new Regex(@"^Összesítés|^Kreditpontok a modell ?tanterv féléveiben");
-            Regex mscFelevFilter = new Regex(@"(.* félév[\s\S]*\d. félév[\s\S]*\d. félév[\s\S]*esetén\))");
 
+            int lastRow = getRowNum(ws);
+            Regex vegeFilter = new Regex(@"(?i)^Összesítés|^Kreditpontok a modell ?tanterv féléveiben");
 
             for (int currentRow = 1; currentRow < lastRow; currentRow++)
-                {
-                    targyTipus = "";
-                    ajanlottFelev = Convert.ToString(felevCounter);
-                    Regex felevFilter = new Regex(felevCounter + ". *félév");
-                    Regex szabvalFilter = new Regex(@"(?i)^Tantárgy\sneve");
+            {
+                targyTipus = "";
+                ajanlottFelev = Convert.ToString(felevCounter);
+                Regex felevFilter = new Regex(felevCounter + ". *félév");              
 
-                if (ws.Cells[currentRow, 1].Value2 != null && osszesFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString()))
-                    { //ha elértünk a végéhez
-                        return;
-                    }
+                if (ws.Cells[currentRow, 1].Value2 != null && vegeFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString()))
+                { //ha elértünk a végéhez
+                    return;
+                }
                 else if (ws.Cells[currentRow, 1].Value2 != null && mscFelevFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString())) //ha uj msc felev van
-                    {
-                        MatchCollection matches = Regex.Matches(ws.Cells[currentRow, 1].Value2.ToString(), @"(.* félév[\s\S]*\d. félév[\s\S]*\d. félév[\s\S]*esetén\))");
-                        ajanlottFelev = matches[0].Value;
-                        currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, ref targyTipus);
-                        felevCounter++;
-                    }
+                {
+                    MatchCollection matches = Regex.Matches(ws.Cells[currentRow, 1].Value2.ToString(), @"(.* félév[\s\S]*\d. félév[\s\S]*\d. félév[\s\S]*esetén\))");
+                    ajanlottFelev = matches[0].Value;
+                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
+                    felevCounter++;
+                }
                 else if (ws.Cells[currentRow, 1].Value2 != null && felevFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString())) //ha uj felev van
-                    {
-                        currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, ref targyTipus);
-                        felevCounter++;
-                    }
+                {
+                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
+                    felevCounter++;
+                }
                 else if ((felevCounter > 1 || felevCounter == 0) && ws.Cells[currentRow, 1].Value2 != null && ws.Cells[currentRow + 1, 1].Value2 != null &&
                         szabvalFilter.IsMatch(ws.Cells[currentRow + 1, 1].Value2.ToString())) //ha diff-es kategoria
-                    {
-                        felevCounter = 0;
-                        ajanlottFelev = Convert.ToString(felevCounter);
-                        setTipusToDiff(ref currentRow, ref targyKategoria);
-                        currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, ref targyTipus);
-                    }
+                {
+                    felevCounter = 0;
+                    ajanlottFelev = Convert.ToString(felevCounter);
+                    targyKategoria = ws.Cells[currentRow, 1].Value2.ToString();
+                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
                 }
+                else if (ws.Cells[currentRow, 1].Value2 != null && kommentFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString()))
+                { //komment esetén
+                    MatchCollection matches = Regex.Matches(ws.Cells[currentRow, 1].Value2.ToString(), @"(\* ?([^*]+))+");
+                    string[] array = new string[matches.Count];
+                    for (int i = 0; i < matches.Count; i++)
+                    {
+                        //kommentek.Add(new Komment(ajanlottFelev, match.Groups[2].Value));
+                        //Console.WriteLine(match.Groups[2].Value); //testing
+                        array[i] = matches[i].Groups[2].Value;
+                        Console.WriteLine(matches[i].Groups[2].Value);
+
+                    }
+                    megjegyzesek.Add(ajanlottFelev, array);
+                }
+            }
 
         }
     }

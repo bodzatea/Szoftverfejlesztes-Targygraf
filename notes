@@ -8,28 +8,62 @@ mérnökinfó régi
 villamos új 
 villamos régi
 
--előfeltételeknél még kell:
-	vagyos rész megoldása
-
--kommentek kezelése?
-
--szaktípusok beolvasása
-
 msc:
 mérnökinfó új 
 mérnökinfó régi
-
+logmérnök
+proginfó
 logmérnök -tavasszal, ősszel
 proginfó 
 
 foksz:
 mérnökinfó új
 mérnökinfó régi
-proginfó régi
 proginfó új
-
-
+proginfó régi
 
 egyéb:
 olajipari
 üzemmérnök
+
+Előfeltétel:
+Üres: , -
+	(TKMA1243D)* MISAB154P
+	MIMAB146M, ahol * vele együtt is felveheti
+	min. 75 kredit
+	50 kreditpont
+	50 kredit
+	teljesített 45 kreditpont
+	(teljesített 20 kreditpont) ÉS MISAM344S
+	teljesített 20 kreditpont és VEMKGEB243B
+	MISAM144E vagy MISAM143K
+	VEMISA1144A vagy VEMISAB144A, VEMKSA2144B vagy VEMISAB154R
+	VEMIVIF234P vagy Web pr. II. (új)
+	Diplomalabor
+	Korszerű adatbányászati módszerek I.
+	Algoritmus- és bonyolultság- elmélet
+	"VEMKVI2212A és ((VEMIVI2233A és VEMIVI2233D) vagy VEMIVIB236A)"
+	"VEMKVI2114I és [VEMIVIB257P vagy VEMIVIB155P]"
+	"VEMIVIB232D és [VEMIVI2146A vagy VEMIVIB243A] és [VEMIVI2146D vagy VEMIVIB244D]"
+	"[VEMIVI2146A vagy VEMIVIB143A] és [VEMIVI2146D vagy VEMIVIB344D] és [VEMIVIB257P vagy VEMIVIB154P]"
+
+
+group 1: (
+group 2: kód
+group 3: vagy
+group 4: )
+
+	
+	
+	*-al jelölt tárgyakat csak azok a hallgatók vehetik fel, akik ezt az alapképzésben még nem teljesítették. logmérnök MSC
+	
+	Angol nyelv I* English Language I
+	* Csak nappali tagozaton
+	
+	* A tantervi táblázatokban ( ) zárójelben szereplő tantárgyi előfeltétel az adott tantárggyal együtt, azonos félévben is teljesíthető.
+	** Csak nappali tagozaton
+	
+	* Csak Veszprémben
+	** Csak Nagykanizsán
+	
+	

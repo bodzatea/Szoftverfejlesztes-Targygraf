@@ -19,7 +19,7 @@ namespace Targygraf
 
         //set connection
         public void SetConnection() {
-           // sql_conn = new SQLiteConnection("Data Source=TargyakDB.db;Version=3;New=False;Compress=True");
+             //sql_conn = new SQLiteConnection("Data Source=targygrafDB.db;Version=3;New=False;Compress=True");
             sql_conn = new SQLiteConnection(LoadConnectionString());
 
         }
@@ -34,6 +34,17 @@ namespace Targygraf
             sql_conn.Close();
         }
 
+        public string QueryResult(string txtQuery)
+        {
+            SetConnection();
+            sql_conn.Open();
+            sql_cmd = sql_conn.CreateCommand();
+            sql_cmd.CommandText = txtQuery;
+            string result = sql_cmd.ExecuteScalar().ToString();
+            sql_conn.Close();
+
+            return result;
+        }
 
         private static string LoadConnectionString(string id = "Default")
         {
