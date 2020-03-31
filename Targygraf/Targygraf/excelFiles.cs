@@ -25,7 +25,6 @@ namespace Targygraf
         List<Komment> kommentek = new List<Komment>();
         Dictionary<string, string[]> megjegyzesek;
 
-
         public excelFiles() {
             //wb = excel.Workbooks.Open(@"d:\szoftverfejlesztes\proginfo.xlsx");
 
@@ -43,7 +42,7 @@ namespace Targygraf
                     megjegyzesek = new Dictionary<string, string[]>();
                     readInData(); //beolvasunk
                     //addKomments();
-                    //insertCurrentDatas();
+                    insertCurrentDatas();
 
                     Console.WriteLine(""); //testing
                     wb.Close(0); //bezárjuk, nem mentünk
@@ -248,6 +247,7 @@ namespace Targygraf
 
 
         public void printMegjegyzes() {
+            Console.WriteLine("Az adott szakon ilyen megjegyzesek vannak: ");
             foreach (var m in megjegyzesek) {
                 Console.WriteLine(m.Key);
                 foreach (string v in m.Value) {
@@ -275,7 +275,7 @@ namespace Targygraf
                 int starCount = targy.nev.Length - targy.nev.Replace("*", "").Length;
                 if (starCount != 0)
                 {
-                    Console.WriteLine(targy.nev);
+                    Console.Write(targy.nev);
                     try{
                         sqlite.ExecuteQuery("insert into Megjegyzése values (" + szakid + ", '" + targy.kod + "', '"
                         + megjegyzesek[targy.ajanlottfelev][starCount - 1] + "')");
@@ -293,7 +293,7 @@ namespace Targygraf
 
         public void insertCurrentDatas() {
             SqliteDataAccess sqlite = new SqliteDataAccess();
-            //szak.printSzak();
+            szak.printSzak();
             sqlite.ExecuteQuery(szak.getInsert());
 
             string szakid = sqlite.QueryResult("select id from Szak where név='" + szak.szakNev +
@@ -302,34 +302,33 @@ namespace Targygraf
             Console.WriteLine(szakid);
             foreach (Targy targy in targyak)
             {
-               // targy.printTargy();
+                targy.printTargy();
                 try{
-                    sqlite.ExecuteQuery(targy.getInsertTantargy());
+                    sqlite.ExecuteQuery(targy.getInsertTantargy()); //tantargy beszurasa
                 }
                 catch (Exception e){
                      Console.WriteLine(e);
                 }
                 try{
-                    sqlite.ExecuteQuery(targy.getInsertTantargya(szakid));
+                    sqlite.ExecuteQuery(targy.getInsertTantargya(szakid)); //tantargya beszurasa
                 }
                 catch (Exception e){
                     Console.WriteLine(e.Message);
                 }
                 if (targy.kreditfeltetel!=0) {
                     try{
-                        sqlite.ExecuteQuery(targy.getInsertKreditfeltetel());
+                        sqlite.ExecuteQuery(targy.getInsertKreditfeltetel()); //kreditfeltetel beszurasa
                     }
                     catch (Exception e){
                         Console.WriteLine(e.Message);
                     }
                     try{
-                        sqlite.ExecuteQuery(targy.getInsertKreditFeltetele(szakid));
+                        sqlite.ExecuteQuery(targy.getInsertKreditFeltetele(szakid)); //kreditfeltetele beszurasa
                     }
                     catch (Exception e){
                         Console.WriteLine(e.Message);
                     }
                 }
-
             }
             addMegjegyzesek(sqlite, szakid);
 
@@ -337,6 +336,7 @@ namespace Targygraf
             {
                 foreach(Elofeltetel feltetel in targy.elofeltetelek)
                 {
+                    feltetel.printElofeltetel();
                     try{
                         sqlite.ExecuteQuery(feltetel.getInsertElofeltetele(szakid, targy.kod));
                     }
@@ -346,6 +346,7 @@ namespace Targygraf
                 }
                 foreach (Elofeltetel feltetel in targy.elofeltetelek)
                 {
+
                     if (!string.IsNullOrEmpty(feltetel.masodikkod)) {
                         try
                         {
@@ -366,10 +367,9 @@ namespace Targygraf
             getSzak();
 
             int felevCounter = 1;
-            string ajanlottFelev = "";
+            string ajanlottFelev = "1";
             string targyKategoria = "Kötelező szakmai tárgyak";
             string targyTipus = "";
-            string elozoFelev = "";
 
             int lastRow = getRowNum(ws);
             Regex vegeFilter = new Regex(@"(?i)^Összesítés|^Kreditpontok a modell ?tanterv féléveiben");
@@ -377,8 +377,6 @@ namespace Targygraf
             for (int currentRow = 1; currentRow < lastRow; currentRow++)
             {
                 targyTipus = "";
-                //elozoFelev = ajanlottFelev;
-                ajanlottFelev = Convert.ToString(felevCounter);
                 Regex felevFilter = new Regex(felevCounter + ". *félév");              
 
                 if (ws.Cells[currentRow, 1].Value2 != null && vegeFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString()))
@@ -387,24 +385,25 @@ namespace Targygraf
                 }
                 else if (ws.Cells[currentRow, 1].Value2 != null && mscFelevFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString())) //ha uj msc felev van
                 {
+
                     MatchCollection matches = Regex.Matches(ws.Cells[currentRow, 1].Value2.ToString(), @"(.* félév[\s\S]*\d. félév[\s\S]*\d. félév[\s\S]*esetén\))");
-                    elozoFelev = ajanlottFelev;
                     ajanlottFelev = matches[0].Value;
-                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
                     felevCounter++;
+                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
+
                 }
                 else if (ws.Cells[currentRow, 1].Value2 != null && felevFilter.IsMatch(ws.Cells[currentRow, 1].Value2.ToString())) //ha uj felev van
                 {
-                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
-                    elozoFelev = ajanlottFelev;
-                    felevCounter++;
                     ajanlottFelev = Convert.ToString(felevCounter);
+                    felevCounter++;
+
+                    currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
+                    
                 }
                 else if ((felevCounter > 1 || felevCounter == 0) && ws.Cells[currentRow, 1].Value2 != null && ws.Cells[currentRow + 1, 1].Value2 != null &&
                         szabvalFilter.IsMatch(ws.Cells[currentRow + 1, 1].Value2.ToString())) //ha diff-es kategoria
                 {
                     felevCounter = 0;
-                    elozoFelev = ajanlottFelev;
                     ajanlottFelev = Convert.ToString(felevCounter);
                     targyKategoria = ws.Cells[currentRow, 1].Value2.ToString();
                     currentRow = getUjFelev(lastRow, currentRow, ajanlottFelev, targyKategoria, targyTipus);
@@ -418,8 +417,8 @@ namespace Targygraf
                         array[i] = matches[i].Groups[2].Value;
                         Console.WriteLine(matches[i].Groups[2].Value);
                     }
-                    Console.WriteLine("felev szama: "+elozoFelev);
-                    megjegyzesek.Add(elozoFelev, array);
+                    //Console.WriteLine("felev szama: "+elozoFelev);
+                    megjegyzesek.Add(ajanlottFelev, array);
                 }
             }
 

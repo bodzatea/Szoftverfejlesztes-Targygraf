@@ -127,22 +127,22 @@ namespace Targygraf
 
         private void kodFormat()
         {
-            Regex kodFilter = new Regex(@"(\()?([A-Z]+[0-9]+[a-zA-Z]+)(\))?( vagy)?");
-            Regex kreditFilter = new Regex(@"([0-9]+) ?kredit");
+            Regex kodFilter = new Regex(@"(\()?([A-Z]+[0-9]+[a-zA-Z]+)(\))?\*?\s*(vagy)?");
+            Regex kreditFilter = new Regex(@"([0-9]+) *kredit");
             elofeltetelek = new List<Elofeltetel>();
 
             if (kreditFilter.IsMatch(elofeltetelstring) || kodFilter.IsMatch(elofeltetelstring))
             {
                 if (kreditFilter.IsMatch(elofeltetelstring)) {
                     //megjegyzésbe rakjuk a feltételt, esetleg kiszámoljuk?
-                    MatchCollection matches = Regex.Matches(elofeltetelstring, @"([0-9]+) ?kredit");
+                    MatchCollection matches = Regex.Matches(elofeltetelstring, @"([0-9]+) *kredit");
                     kreditfeltetel = Convert.ToInt32(matches[0].Groups[1].Value);
                     //Console.WriteLine(kreditfeltetel);
                 }
 
                 if (kodFilter.IsMatch(elofeltetelstring)) {
                     //berakjuk előfeltételbe, 
-                    MatchCollection matches = Regex.Matches(elofeltetelstring, @"(\()?([A-Z]+[0-9]+[a-zA-Z]+)(\))?( vagy)?");
+                    MatchCollection matches = Regex.Matches(elofeltetelstring, @"(\()?([A-Z]+[0-9]+[a-zA-Z]+)(\))?\*?\s*(vagy)?");
                     int egyszerrefelveheto = 0;
                     string helyettesitokod = "";
 

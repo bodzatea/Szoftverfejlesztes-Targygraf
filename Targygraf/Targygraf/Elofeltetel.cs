@@ -19,6 +19,10 @@ namespace Targygraf
             this.masodikkod = helyettesitokod;
         }
 
+        public void printElofeltetel() {
+            Console.WriteLine("Elofeltetele: "+ elsokod+ ", " +egyszerrefelveheto+", " +masodikkod);
+        }
+
         public string getInsertElofeltetele(string szakid, string targykod) { 
             return "insert into Előfeltétele(előfeltételkód, ráépülőkód, szakid, egyszerrefelveheto) values " +
                               "('" + elsokod + "', '" + targykod + "', "+szakid+", "+egyszerrefelveheto+")";
