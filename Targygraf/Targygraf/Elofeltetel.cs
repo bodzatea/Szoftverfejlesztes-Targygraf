@@ -14,9 +14,9 @@ namespace Targygraf
 
         public Elofeltetel(string kod, int egyszerrefelveheto, string helyettesitokod)
         {
-            this.elsokod = kod;
+            this.elsokod = kod.ToUpper();
             this.egyszerrefelveheto = egyszerrefelveheto;
-            this.masodikkod = helyettesitokod;
+            this.masodikkod = helyettesitokod.ToUpper();
         }
 
         public void printElofeltetel() {

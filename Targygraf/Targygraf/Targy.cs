@@ -23,27 +23,6 @@ namespace Targygraf
 
         public List<Elofeltetel> elofeltetelek;
 
-        //public struct elofeltetel {
-        //    public string kod;
-        //    public bool egyszerrefelveheto;
-        //    public string helyettesitokod;
-
-        //    public elofeltetel(string kod, bool egyszerrefelveheto, string helyettesitokod)
-        //    {
-        //        this.kod = kod;
-        //        this.egyszerrefelveheto = egyszerrefelveheto;
-        //        this.helyettesitokod = helyettesitokod;
-        //    }
-        //}
-
-        //List<string> elofeltetelkod
-
-
-        //elsonek siman beilleszti a targyakat, majd a szakra jellemző adatait
-        //utána felviszi az előfeltételeket
-
-
-
         public Targy(string nev, string kod, string ajanlottfelev, string kategoria, string tipus, 
             int kredit, string elofeltetelstring) 
         {
@@ -89,11 +68,6 @@ namespace Targygraf
         }
 
         public string getInsertTantargya(string szakid) {
-            //if (string.IsNullOrEmpty(megjegyzes))
-            //{
-            //    megjegyzes = "NULL";
-            //}
-            //else megjegyzes = "'" + megjegyzes + "'";
             if (string.IsNullOrEmpty(kod))
             {
                 return "insert into Kategóriája(név, szakid, kredit, ajánlottfélév) values" +
@@ -131,8 +105,6 @@ namespace Targygraf
             Regex kreditFilter = new Regex(@"([0-9]+) *kredit");
             elofeltetelek = new List<Elofeltetel>();
 
-            if (kreditFilter.IsMatch(elofeltetelstring) || kodFilter.IsMatch(elofeltetelstring))
-            {
                 if (kreditFilter.IsMatch(elofeltetelstring)) {
                     //megjegyzésbe rakjuk a feltételt, esetleg kiszámoljuk?
                     MatchCollection matches = Regex.Matches(elofeltetelstring, @"([0-9]+) *kredit");
@@ -166,10 +138,6 @@ namespace Targygraf
                     }
                 }
             }
-            else { 
-                //a string valami különleges, ezért megjegyzésbe rakjuk
-            }
-        }
     }
 
 

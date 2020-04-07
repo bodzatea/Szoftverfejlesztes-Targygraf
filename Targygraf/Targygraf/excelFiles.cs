@@ -22,7 +22,6 @@ namespace Targygraf
 
         Szak szak;
         List<Targy> targyak;
-        List<Komment> kommentek = new List<Komment>();
         Dictionary<string, string[]> megjegyzesek;
 
         public excelFiles() {
@@ -41,7 +40,6 @@ namespace Targygraf
                     targyak = new List<Targy>();
                     megjegyzesek = new Dictionary<string, string[]>();
                     readInData(); //beolvasunk
-                    //addKomments();
                     insertCurrentDatas();
 
                     Console.WriteLine(""); //testing
@@ -105,6 +103,8 @@ namespace Targygraf
             }
             //wb.SaveCopyAs(@"D:\Szoftverfejlesztes-Targygraf\Book1.xlsx"); //testing, ha ki akarjuk menteni valamelyik sheetet
         }
+
+
 
         public string hunOnly(string text) //próbálkoztam a magyar és angol szöveg felezésével
         {
@@ -282,11 +282,9 @@ namespace Targygraf
                     }
                     catch (Exception e){
                         Console.WriteLine(e);
-                    }
-                    //targy.setMegjegyzes(megjegyzesek[targy.ajanlottfelev][starCount - 1]);                  
+                    }                 
                     Console.WriteLine(megjegyzesek[targy.ajanlottfelev][starCount - 1]);
                 }
-                //targy.nev = targy.nev.Replace("*", "");
             }
         }
 
