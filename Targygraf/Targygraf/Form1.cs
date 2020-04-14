@@ -36,5 +36,10 @@ namespace Targygraf
             //SqliteDataAccess sql = new SqliteDataAccess();
             //sql.ExecuteQuery("insert into Targy(id, nev, kod, kredit) values(, 'Matek', 'VEMIMAB', 6)");
         }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
